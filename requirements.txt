@@ -1,0 +1,26 @@
+streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+plotly>=5.15.0
+openpyxl>=3.1.0
+reportlab>=4.0.0
+google-generativeai>=0.3.0
+gspread>=5.11.0
+google-auth>=2.22.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.1.0
+
+# GPU 가속 라이브러리 (선택적)
+# NVIDIA GPU가 있는 경우 설치:
+# pip install cudf-cu12 cupy-cuda12x numba
+
+# 비동기 처리
+aiohttp>=3.8.0
+asyncio
+
+# 병렬 처리
+multiprocessing
+concurrent.futures
