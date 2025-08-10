@@ -65,16 +65,21 @@ GEMINI_API_KEY = "AIzaSyB176ys4MCjEs8R0dv15hMqDE2G-9J0qIA"  # 실제 키. 보안
 # ==========================
 # UI 및 시각화 설정
 # ==========================
+# SK 브랜드 컬러 테마
 SK_COLORS = {
-    'primary': '#E31E24',
-    'secondary': '#FF6B35',
-    'accent': '#004EA2',
-    'competitor_1': '#AEC6CF', # 파스텔 블루
-    'competitor_2': '#FFB6C1', # 파스텔 핑크
-    'competitor_3': '#98FB98', # 파스텔 그린
-    'competitor_4': '#F0E68C', # 파스텔 옐로우
-    'competitor_5': '#DDA0DD', # 파스텔 퍼플
-    'competitor': '#6C757D',
+    'primary': '#E31E24',      # SK 레드
+    'secondary': '#FF6B35',    # SK 오렌지
+    'accent': '#004EA2',       # SK 블루
+    'success': '#00A651',      # 성공 색상
+    'warning': '#FF9500',      # 경고 색상
+    'competitor': '#6C757D',   # 기본 경쟁사 색상 (회색)
+    # 개별 경쟁사 파스텔 색상
+    'competitor_green': '#8BC34A', # 파스텔 그린
+    'competitor_blue': '#64B5F6',  # 파스텔 블루
+    'competitor_yellow': '#FFF176',# 파스텔 옐로우
+    'competitor_purple': '#B39DDB',# 파스텔 퍼플
+    'competitor_orange': '#FFCC80',# 파스텔 오렌지
+    'competitor_mint': '#80CBC4'   # 파스텔 민트
 }
 
 # 분석 대상 회사 목록 (UI에서 사용)

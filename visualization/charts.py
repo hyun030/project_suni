@@ -35,36 +35,95 @@ def create_sk_bar_chart(chart_df: pd.DataFrame):
     )
     return fig
 
-def create_sk_radar_chart(chart_df: pd.DataFrame):
-    """SK에너지 중심 레이더 차트"""
-    if chart_df.empty or not PLOTLY_AVAILABLE: return None
+def create_sk_radar_chart(chart_df):
+    """SK에너지 중심 레이더 차트 (지표별 Min-Max 정규화 적용)"""
+    if chart_df.empty or not PLOTLY_AVAILABLE:
+        return None
     
-    companies = chart_df['회사'].unique()
-    metrics = chart_df['지표'].unique()
+    companies = chart_df['회사'].unique() if '회사' in chart_df.columns else []
+    metrics = chart_df['지표'].unique() if '지표' in chart_df.columns else []
+    
+    # 지표별 최소, 최대값 계산
+    min_max = {}
+    for metric in metrics:
+        values = chart_df.loc[chart_df['지표'] == metric, '수치']
+        min_val = values.min()
+        max_val = values.max()
+        # 최소 최대값이 같으면 max_val = min_val + 1로 설정(0 나누기 방지)
+        if min_val == max_val:
+            max_val = min_val + 1
+        min_max[metric] = (min_val, max_val)
     
     fig = go.Figure()
     
-    for company in companies:
-        company_data = chart_df[chart_df['회사'] == company]
-        values = company_data['수치'].tolist()
+    for i, company in enumerate(companies):
+        company_data = chart_df[chart_df['회사'] == company] if '회사' in chart_df.columns else chart_df
+        normalized_values = []
+        for metric in metrics:
+            raw_value = company_data.loc[company_data['지표'] == metric, '수치'].values
+            if len(raw_value) == 0:
+                norm_value = 0
+            else:
+                val = raw_value[0]
+                min_val, max_val = min_max[metric]
+                norm_value = (val - min_val) / (max_val - min_val)
+            normalized_values.append(norm_value)
         
-        if not values: continue
-            
+        # 닫힌 도형을 위해 첫 값 반복
+        normalized_values.append(normalized_values[0])
+        theta_labels = list(metrics) + [metrics[0]] if len(metrics) > 0 else ['지표1']
+        
+        # 색상
         color = get_company_color(company, companies)
-        line_width, name_style = (4, f"**{company}**") if 'SK' in company else (2, company)
-            
+        
+        # SK에너지 스타일 강조
+        if 'SK' in company:
+            line_width = 5
+            marker_size = 12
+            name_style = f"**{company}**"
+        else:
+            line_width = 3
+            marker_size = 8
+            name_style = company
+        
         fig.add_trace(go.Scatterpolar(
-            r=values + values[:1],
-            theta=list(metrics) + [metrics[0]],
-            fill='toself', name=name_style,
-            line=dict(width=line_width, color=color)
+            r=normalized_values,
+            theta=theta_labels,
+            fill='toself',
+            name=name_style,
+            line=dict(width=line_width, color=color),
+            marker=dict(size=marker_size, color=color)
         ))
     
-    max_val = chart_df['수치'].max()
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, max_val * 1.2])),
-        title="🎯 주요 지표 역량 비교", height=500
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 1],  # 정규화 했으니 0~1 범위
+                tickmode='linear',
+                tick0=0,
+                dtick=0.2,
+                tickfont=dict(size=14)
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=16)
+            )
+        ),
+        title="🎯 SK에너지 vs 경쟁사 수익성 지표 비교 (정규화)",
+        height=600,
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(size=14)
+        ),
+        title_font_size=20,
+        font=dict(size=14)
     )
+    
     return fig
 
 def create_quarterly_trend_chart(quarterly_df: pd.DataFrame):
